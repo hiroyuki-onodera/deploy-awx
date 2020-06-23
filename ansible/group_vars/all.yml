@@ -1,12 +1,18 @@
 ---
 awx:
   tz: "Asia/Tokyo"
-  work_user: "ec2-user"
-  work_dir: "/home/ec2-user/awx"
+  #work_user: "ec2-user"
+  #work_user: "kitchen"
+  work_user: "{{ ansible_user }}"
+  #work_dir: "/home/ec2-user/awx"
+  #work_dir: "/home/kitchen"
+  work_dir: "~{{ ansible_user }}"
   # AWXに登録した認証鍵を暗号化するための鍵
   secret_key: "XOVUutEJr1yGg2HK"
   project_dir: "project"
-  version: "1.0.5"
+  #version: "1.0.5"
+  #version: "11.2.0"
+  version: "9.0.1"
   web:
     username: "admin"
     password: "iryKdFVqWtNZXTNK"
