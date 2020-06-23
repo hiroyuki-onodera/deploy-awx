@@ -1,28 +1,42 @@
 ---
-- name: set timezone
-  timezone:
-    name: "{{ awx.tz }}"
-  become: yes
+- 
+  become: true
+  block:
 
-- name: create work dir
+  - name: set timezone
+    timezone:
+      name: "{{ awx.tz }}"
+  
+  -
+    name: disable firewalld
+    systemd:
+      name: firewalld
+      state: stopped # started
+      enabled: false
+
+  
+  - name: install git, ansible with epel repo
+    yum:
+      name:
+      - git
+      #- ansible
+      enablerepo: epel
+      #state: present
+  
+  - yum:
+      name:
+      - yum-utils 
+      - device-mapper-persistent-data 
+      - lvm2
+  
+- name: create work and awx source directory
   file:
     dest: "{{ awx.work_dir }}"
     state: directory
+  loop:
+    - "{{ awx.work_dir }}"
+    - "{{ awx.work_dir }}/src"
 
-- name: install git, ansible with epel repo
-  yum:
-    name: "{{ item }}"
-    enablerepo: epel
-    state: present
-  with_items:
-    - git
-    - ansible
-  become: yes
-
-- name: create awx source directory
-  file:
-    dest: "{{ awx.work_dir }}/src"
-    state: directory
 
 # AWXのソースをチェックアウト
 - name: check out git resource
@@ -44,15 +58,37 @@
     dest: "{{ awx.work_dir }}/{{ awx.project_dir }}"
     state: directory
 
-# AWXインストール時にインベントリ変数を上書きするためのgroup_varsフォルダを作成
-- name: create group_vars dir
-  file:
-    dest: "{{ awx.work_dir }}/src/installer/group_vars"
-    state: directory
+# # AWXインストール時にインベントリ変数を上書きするためのgroup_varsフォルダを作成
+# - name: create group_vars dir
+#   file:
+#     dest: "{{ awx.work_dir }}/src/installer/group_vars"
+#     state: directory
+# 
+# # AWXインストール用の変数を展開
+# - name: overwrite awx inventory variable
+#   template:
+#     src: all.j2.yml
+#     dest: "{{ awx.work_dir }}/src/installer/group_vars/all.yml"
+#     mode: 0640
 
-# AWXインストール用の変数を展開
-- name: overwrite awx inventory variable
-  template:
-    src: all.j2.yml
-    dest: "{{ awx.work_dir }}/src/installer/group_vars/all.yml"
-    mode: u=rw,g=r,o=
+
+- name: edit inventory file
+  shell: |
+    cd {{ awx.work_dir }}/src/installer
+    sed 's/^\([^#][^ ]*=\)"*\([^"]*\)"*$/\1"\2"/' inventory > inventory.new && { 
+    mv inventory     inventory.orig
+    mv inventory.new inventory
+    }
+  args:
+    creates: "{{ awx.work_dir }}/src/installer/inventory.orig"
+
+
+
+- debug:
+    msg: |
+      kitchen login
+      cd src/installer
+      sudo ansible-playbook -i inventory install.yml
+      ^d
+      open -a /Applications/Safari.app http://localhost:8080/
+      ユーザ名：admin, パスワード：password

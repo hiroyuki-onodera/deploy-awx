@@ -3,4 +3,9 @@
   command: ansible-playbook -i inventory install.yml
   args:
     chdir: "{{ awx.work_dir }}/src/installer"
-  become: yes
+  become: true
+
+
+# TASK [local_docker : Activate AWX Web Container] *****************************************************************
+# fatal: [localhost]: FAILED! => {"changed": false, "msg": "Error starting container 5519ed53c8edd7bedb0f49d604fe4b6f84786d7117bfcb988910606a22934510: 500 Server Error: Internal Server Error (\"driver failed programming external connectivity on endpoint awx_web (8b1b7fa220cc100081759d389258e317d798e8984e058fbdb4f2a804b5761f02): Bind for 0.0.0.0:80 failed: port is already allocated\")"}
+# 

@@ -1,6 +1,8 @@
 ---
 - name: install awx
-  hosts: awx
+  #hosts: awx
+  hosts: all
+  #become: true
   roles:
     - role: docker
     - role: pip
