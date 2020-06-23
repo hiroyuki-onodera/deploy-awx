@@ -21,3 +21,28 @@ t2.microだとメモリ不足でフリーズします
 ## Web UI
 
 デフォルトUSERNAME/PASSWORDは`admin`/`password`です
+
+
+## test-kitchen
+
+### 前提
+
+Macにて検証
+test-kitchen
+kitchen-ansiblepush
+ansible
+virtualbox
+vagrant
+git
+
+### 手順
+
+$ git clone git@github.com:hiroyuki-onodera/deploy-awx.git
+$ kitchen test -d never
+$ kitchen login
+$ cd src/installer
+$ sudo ansible-playbook -i inventory install.yml
+^d
+$ open -a /Applications/Safari.app http://localhost:8080/
+ユーザ名：admin, パスワード：password
+
