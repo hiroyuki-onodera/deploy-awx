@@ -11,8 +11,9 @@ awx:
   secret_key: "XOVUutEJr1yGg2HK"
   project_dir: "project"
   #version: "1.0.5"
+  version: "13.0.0"
   #version: "11.2.0"
-  version: "9.0.1"
+  #version: "9.0.1"
   web:
     username: "admin"
     password: "iryKdFVqWtNZXTNK"
